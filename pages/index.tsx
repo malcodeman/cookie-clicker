@@ -150,9 +150,9 @@ function Home() {
                 key={item.id}
                 id={item.id}
                 name={item.name}
-                price={utils.formatNumber(item.price)}
+                price={item.price}
                 isDisabled={watts < item.price}
-                count={utils.formatNumber(item.count)}
+                count={item.count}
                 onClick={handleBuildItem}
               />
             ))}

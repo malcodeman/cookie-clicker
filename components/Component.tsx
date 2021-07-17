@@ -1,5 +1,7 @@
 import { Box, Text, Button } from "@chakra-ui/react";
 
+import utils from "../lib/utils";
+
 type props = {
   id: string;
   name: string;
@@ -23,11 +25,11 @@ function Component(props: props) {
     >
       <Box textAlign="left">
         <Text>{name}</Text>
-        <Text>{price} watts</Text>
+        <Text>{utils.formatNumber(price)} watts</Text>
       </Box>
       <Box>
         <Text fontWeight="bold" fontSize="2xl">
-          {count}
+          {utils.formatNumber(count)}
         </Text>
       </Box>
     </Button>

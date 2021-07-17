@@ -1,5 +1,5 @@
-function formatNumber(number: number): number {
-  return Number(Intl.NumberFormat().format(number));
+function formatNumber(number: number): string {
+  return Intl.NumberFormat().format(number);
 }
 
 const EXPORTS = {
