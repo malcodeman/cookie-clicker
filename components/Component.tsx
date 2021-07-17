@@ -1,4 +1,4 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Text, Button } from "@chakra-ui/react";
 
 type props = {
   id: string;
@@ -12,24 +12,16 @@ type props = {
 function Component(props: props) {
   const { id, name, price, isDisabled, count, onClick, ...rest } = props;
 
-  function onClickHandler() {
-    if (!isDisabled) {
-      onClick(id);
-    }
-  }
-
   return (
-    <Flex
-      backgroundColor={isDisabled ? "rgba(0,0,0,0.1)" : "initial"}
-      cursor="pointer"
-      padding="2"
-      borderRadius="md"
+    <Button
+      size="lg"
+      mb="2"
       justifyContent="space-between"
-      alignItems="center"
-      onClick={onClickHandler}
+      isDisabled={isDisabled}
+      onClick={() => onClick(id)}
       {...rest}
     >
-      <Box>
+      <Box textAlign="left">
         <Text>{name}</Text>
         <Text>{price} watts</Text>
       </Box>
@@ -38,7 +30,7 @@ function Component(props: props) {
           {count}
         </Text>
       </Box>
-    </Flex>
+    </Button>
   );
 }
 

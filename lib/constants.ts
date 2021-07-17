@@ -15,10 +15,12 @@ const INITIAL_COMPONENTS = [
     perSecond: 1,
   },
 ];
+const AUTO_SAVE_DELAY = 2000;
 
 const EXPORTS = {
   DEFAULT_PLANT_NAME,
   INITIAL_COMPONENTS,
+  AUTO_SAVE_DELAY,
 };
 
 export default EXPORTS;

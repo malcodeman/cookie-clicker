@@ -17,17 +17,24 @@ import { useInterval } from "react-use";
 import * as R from "ramda";
 
 import constants from "../lib/constants";
+import utils from "../lib/utils";
+
 import Component from "../components/Component";
 
 function Home() {
-  const [components, setComponents] = React.useState(
-    constants.INITIAL_COMPONENTS
-  );
   const [localStorageName, setLocalStorageName] = useLocalStorage(
     "name",
     constants.DEFAULT_PLANT_NAME
   );
+  const [localStorageComponents, setLocalStorageComponents] = useLocalStorage(
+    "components",
+    constants.INITIAL_COMPONENTS
+  );
+  const [localStorageWatts, setLocalStorageWatts] = useLocalStorage("watts", 0);
   const [name, setName] = React.useState("");
+  const [components, setComponents] = React.useState(
+    constants.INITIAL_COMPONENTS
+  );
   const [watts, setWatts] = React.useState(0);
   const isRunning: boolean = R.sum(R.map((item) => item.count, components)) > 0;
   const bg = useColorModeValue("gray.100", "gray.900");
@@ -41,6 +48,18 @@ function Home() {
     }
   }, [localStorageName]);
 
+  React.useEffect(() => {
+    if (localStorageComponents) {
+      setComponents(localStorageComponents);
+    }
+  }, [localStorageComponents]);
+
+  React.useEffect(() => {
+    if (localStorageWatts) {
+      setWatts(localStorageWatts);
+    }
+  }, [localStorageWatts]);
+
   useInterval(
     () => {
       R.forEach(
@@ -49,6 +68,14 @@ function Home() {
       );
     },
     isRunning ? 1000 : null
+  );
+
+  useInterval(
+    () => {
+      setLocalStorageComponents(components);
+      setLocalStorageWatts(watts);
+    },
+    isRunning || watts > 0 ? constants.AUTO_SAVE_DELAY : null
   );
 
   function handleOnNameChange(nextValue: string) {
@@ -73,16 +100,13 @@ function Home() {
         decrementWatts(item.price);
         return {
           ...item,
+          price: Math.round(item.price + item.price * 0.1),
           count: (item.count += 1),
         };
       }
       return item;
     });
     return setComponents(values);
-  }
-
-  function formatNumber(number: number) {
-    return Intl.NumberFormat().format(number);
   }
 
   return (
@@ -107,11 +131,11 @@ function Home() {
             </Editable>
             <Box mb="4">
               <Text fontWeight="bold" fontSize="4xl">
-                {formatNumber(watts)}
+                {utils.formatNumber(watts)}
               </Text>
               <Flex justifyContent="space-between">
                 <Text>watts</Text>
-                <Text>per second: {formatNumber(wattsPerSecond)}</Text>
+                <Text>per second: {utils.formatNumber(wattsPerSecond)}</Text>
               </Flex>
             </Box>
             <Flex justifyContent="center">
@@ -126,9 +150,9 @@ function Home() {
                 key={item.id}
                 id={item.id}
                 name={item.name}
-                price={item.price}
+                price={utils.formatNumber(item.price)}
                 isDisabled={watts < item.price}
-                count={item.count}
+                count={utils.formatNumber(item.count)}
                 onClick={handleBuildItem}
               />
             ))}
