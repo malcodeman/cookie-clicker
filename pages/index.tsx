@@ -1,25 +1,26 @@
 import {
-  Container,
   Flex,
   Editable,
   EditablePreview,
   EditableInput,
   Grid,
   Text,
-  Box,
+  Box as ChakraBox,
   Button,
   useColorModeValue,
+  Divider,
 } from "@chakra-ui/react";
 import React from "react";
 import { useLocalStorage } from "react-use";
-import { Plus } from "react-feather";
 import { useInterval } from "react-use";
 import * as R from "ramda";
+import { Canvas } from "@react-three/fiber";
 
 import constants from "../lib/constants";
 import utils from "../lib/utils";
 
 import Component from "../components/Component";
+import Box from "../components/Box";
 
 function Home() {
   const [localStorageName, setLocalStorageName] = useLocalStorage(
@@ -41,6 +42,7 @@ function Home() {
   const wattsPerSecond = R.sum(
     R.map((item) => item.count * item.perSecond, components)
   );
+  const totalComponentCount = R.sum(R.map((item) => item.count, components));
 
   React.useEffect(() => {
     if (localStorageName) {
@@ -110,40 +112,40 @@ function Home() {
   }
 
   return (
-    <Flex minHeight="100vh" justifyContent="center" alignItems="center">
-      <Container>
-        <Grid
-          backgroundColor={bg}
-          gridTemplateColumns="1fr 1fr"
-          gridGap="4"
-          padding="4"
-          borderRadius="lg"
-        >
-          <Flex flexDir="column">
-            <Editable
-              mb="4"
-              value={name}
-              onChange={handleOnNameChange}
-              onSubmit={handleOnNameSubmit}
-            >
-              <EditablePreview />
-              <EditableInput />
-            </Editable>
-            <Box mb="4">
-              <Text fontWeight="bold" fontSize="4xl">
-                {utils.formatNumber(watts)}
-              </Text>
-              <Flex justifyContent="space-between">
-                <Text>watts</Text>
-                <Text>per second: {utils.formatNumber(wattsPerSecond)}</Text>
-              </Flex>
-            </Box>
-            <Flex justifyContent="center">
-              <Button size="lg" onClick={() => incrementWatts(1)}>
-                <Plus size={32} />
-              </Button>
+    <Grid
+      backgroundColor={bg}
+      minHeight="100vh"
+      gridTemplateColumns={{ base: "1fr", md: "256px 1fr" }}
+    >
+      <ChakraBox>
+        <Flex flexDir="column" padding="4">
+          <Editable
+            mb="4"
+            value={name}
+            onChange={handleOnNameChange}
+            onSubmit={handleOnNameSubmit}
+          >
+            <EditablePreview />
+            <EditableInput />
+          </Editable>
+          <ChakraBox mb="4">
+            <Text fontWeight="bold" fontSize="4xl">
+              {utils.formatNumber(watts)}
+            </Text>
+            <Flex justifyContent="space-between">
+              <Text>watts</Text>
+              <Text>per second: {utils.formatNumber(wattsPerSecond)}</Text>
             </Flex>
-          </Flex>
+          </ChakraBox>
+        </Flex>
+        <Flex justifyContent="center">
+          <Button size="lg" onClick={() => incrementWatts(1)}>
+            + 1
+          </Button>
+        </Flex>
+        <ChakraBox padding="4">
+          <Text>Components</Text>
+          <Divider marginY="4" />
           <Flex flexDir="column">
             {components.map((item) => (
               <Component
@@ -157,9 +159,19 @@ function Home() {
               />
             ))}
           </Flex>
-        </Grid>
-      </Container>
-    </Flex>
+        </ChakraBox>
+      </ChakraBox>
+      <Canvas>
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
+        {R.times(
+          (index) => (
+            <Box key={index} position={[0 + index * 0.5, 0, 0]} />
+          ),
+          totalComponentCount
+        )}
+      </Canvas>
+    </Grid>
   );
 }
 
