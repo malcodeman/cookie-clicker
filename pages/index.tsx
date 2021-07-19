@@ -15,12 +15,17 @@ import { useLocalStorage } from "react-use";
 import { useInterval } from "react-use";
 import * as R from "ramda";
 import { Canvas } from "@react-three/fiber";
+import {
+  OrbitControls,
+  PerspectiveCamera,
+  Box,
+  Sphere,
+} from "@react-three/drei";
 
 import constants from "../lib/constants";
 import utils from "../lib/utils";
 
 import Component from "../components/Component";
-import Box from "../components/Box";
 
 function Home() {
   const [localStorageName, setLocalStorageName] = useLocalStorage(
@@ -42,7 +47,6 @@ function Home() {
   const wattsPerSecond = R.sum(
     R.map((item) => item.count * item.perSecond, components)
   );
-  const totalComponentCount = R.sum(R.map((item) => item.count, components));
 
   React.useEffect(() => {
     if (localStorageName) {
@@ -161,14 +165,26 @@ function Home() {
           </Flex>
         </ChakraBox>
       </ChakraBox>
-      <Canvas>
+      <Canvas camera={{ position: [0, 0, 50] }}>
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
+        <PerspectiveCamera />
+        <OrbitControls />
         {R.times(
           (index) => (
-            <Box key={index} position={[0 + index * 0.5, 0, 0]} />
+            <Box key={index} position={[0 + index * 1.2, 0, 0]}>
+              <meshPhongMaterial attach="material" color="#3d99f5" wireframe />
+            </Box>
           ),
-          totalComponentCount
+          components[0].count
+        )}
+        {R.times(
+          (index) => (
+            <Sphere key={index} position={[0 + index * 2.2, -2, 0]}>
+              <meshPhongMaterial attach="material" color="#7961f2" wireframe />
+            </Sphere>
+          ),
+          components[1].count
         )}
       </Canvas>
     </Grid>
