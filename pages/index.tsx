@@ -22,11 +22,17 @@ import {
   Sphere,
 } from "@react-three/drei";
 import useSound from "use-sound";
+import { motion } from "framer-motion";
 
 import constants from "../lib/constants";
 import utils from "../lib/utils";
 
 import Component from "../components/Component";
+
+const buttonVariants = {
+  hover: { scale: 1.2 },
+  tapped: { scale: 0.8 },
+};
 
 function Home() {
   const [localStorageName, setLocalStorageName] = useLocalStorage(
@@ -152,8 +158,15 @@ function Home() {
           </ChakraBox>
         </Flex>
         <Flex justifyContent="center">
-          <Button size="lg" onClick={handleOnClick}>
-            + 1
+          <Button
+            size="lg"
+            as={motion.button}
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tapped"
+            onClick={handleOnClick}
+          >
+            +1
           </Button>
         </Flex>
         <ChakraBox padding="4">
