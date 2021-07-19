@@ -21,6 +21,7 @@ import {
   Box,
   Sphere,
 } from "@react-three/drei";
+import useSound from "use-sound";
 
 import constants from "../lib/constants";
 import utils from "../lib/utils";
@@ -47,6 +48,8 @@ function Home() {
   const wattsPerSecond = R.sum(
     R.map((item) => item.count * item.perSecond, components)
   );
+  const [playClick] = useSound("sounds/button_click.mp3");
+  const [playSpark1] = useSound("sounds/electricity_spark_1.mp3");
 
   React.useEffect(() => {
     if (localStorageName) {
@@ -104,6 +107,7 @@ function Home() {
     const values = components.map((item) => {
       if (item.id === itemID) {
         decrementWatts(item.price);
+        playSpark1();
         return {
           ...item,
           price: Math.round(item.price + item.price * 0.1),
@@ -113,6 +117,11 @@ function Home() {
       return item;
     });
     return setComponents(values);
+  }
+
+  function handleOnClick() {
+    incrementWatts(1);
+    playClick();
   }
 
   return (
@@ -143,7 +152,7 @@ function Home() {
           </ChakraBox>
         </Flex>
         <Flex justifyContent="center">
-          <Button size="lg" onClick={() => incrementWatts(1)}>
+          <Button size="lg" onClick={handleOnClick}>
             + 1
           </Button>
         </Flex>
