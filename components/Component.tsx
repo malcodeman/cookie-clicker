@@ -7,7 +7,7 @@ type props = {
   name: string;
   price: number;
   isDisabled: boolean;
-  count: number;
+  count?: number;
   onClick: (id: string) => void;
 };
 
@@ -27,11 +27,13 @@ function Component(props: props) {
         <Text>{name}</Text>
         <Text>{utils.formatNumber(price)} watts</Text>
       </Box>
-      <Box>
-        <Text fontWeight="bold" fontSize="2xl">
-          {utils.formatNumber(count)}
-        </Text>
-      </Box>
+      {count && (
+        <Box>
+          <Text fontWeight="bold" fontSize="2xl">
+            {utils.formatNumber(count)}
+          </Text>
+        </Box>
+      )}
     </Button>
   );
 }

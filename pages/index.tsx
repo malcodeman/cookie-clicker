@@ -8,7 +8,11 @@ import {
   Box as ChakraBox,
   Button,
   useColorModeValue,
-  Divider,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import React from "react";
 import { useLocalStorage } from "react-use";
@@ -48,9 +52,14 @@ function Home() {
   const [components, setComponents] = React.useState(
     constants.INITIAL_COMPONENTS
   );
+  const [upgrades, setUpgrades] = React.useState(constants.INITIAL_UPGRADES);
   const [watts, setWatts] = React.useState(0);
   const isRunning: boolean = R.sum(R.map((item) => item.count, components)) > 0;
   const bg = useColorModeValue("gray.100", "gray.900");
+  const borderColor = useColorModeValue(
+    "var(--chakra-colors-gray-200)",
+    "var(--chakra-colors-whiteAlpha-300)"
+  );
   const wattsPerSecond = R.sum(
     R.map((item) => item.count * item.perSecond, components)
   );
@@ -136,7 +145,7 @@ function Home() {
       minHeight="100vh"
       gridTemplateColumns={{ base: "1fr", md: "256px 1fr" }}
     >
-      <ChakraBox>
+      <ChakraBox borderRight={`1px solid ${borderColor}`}>
         <Flex flexDir="column" padding="4">
           <Editable
             mb="4"
@@ -147,7 +156,7 @@ function Home() {
             <EditablePreview />
             <EditableInput />
           </Editable>
-          <ChakraBox mb="4">
+          <ChakraBox>
             <Text fontWeight="bold" fontSize="4xl">
               {utils.formatNumber(watts)}
             </Text>
@@ -157,7 +166,7 @@ function Home() {
             </Flex>
           </ChakraBox>
         </Flex>
-        <Flex justifyContent="center">
+        <Flex padding="4" justifyContent="center">
           <Button
             size="lg"
             as={motion.button}
@@ -169,23 +178,43 @@ function Home() {
             +1
           </Button>
         </Flex>
-        <ChakraBox padding="4">
-          <Text>Components</Text>
-          <Divider marginY="4" />
-          <Flex flexDir="column">
-            {components.map((item) => (
-              <Component
-                key={item.id}
-                id={item.id}
-                name={item.name}
-                price={item.price}
-                isDisabled={watts < item.price}
-                count={item.count}
-                onClick={handleBuildItem}
-              />
-            ))}
-          </Flex>
-        </ChakraBox>
+        <Tabs isFitted>
+          <TabList>
+            <Tab>Components</Tab>
+            <Tab>Upgrades</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <Flex flexDir="column">
+                {components.map((item) => (
+                  <Component
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    price={item.price}
+                    isDisabled={watts < item.price}
+                    count={item.count}
+                    onClick={handleBuildItem}
+                  />
+                ))}
+              </Flex>
+            </TabPanel>
+            <TabPanel>
+              <Flex flexDir="column">
+                {upgrades.map((item) => (
+                  <Component
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    price={item.price}
+                    isDisabled={watts < item.price}
+                    onClick={() => {}}
+                  />
+                ))}
+              </Flex>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </ChakraBox>
       <Canvas camera={{ position: [0, 0, 50] }}>
         <ambientLight />

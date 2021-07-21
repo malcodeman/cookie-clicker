@@ -15,11 +15,19 @@ const INITIAL_COMPONENTS = [
     perSecond: 1,
   },
 ];
+const INITIAL_UPGRADES = [
+  {
+    id: "button_tweak",
+    name: "Button tweak",
+    price: 200,
+  },
+];
 const AUTO_SAVE_DELAY = 2000;
 
 const EXPORTS = {
   DEFAULT_PLANT_NAME,
   INITIAL_COMPONENTS,
+  INITIAL_UPGRADES,
   AUTO_SAVE_DELAY,
 };
 
