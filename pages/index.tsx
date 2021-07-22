@@ -31,6 +31,8 @@ import { motion } from "framer-motion";
 import constants from "../lib/constants";
 import utils from "../lib/utils";
 
+import { Upgrade } from "../types";
+
 import Component from "../components/Component";
 
 const buttonVariants = {
@@ -47,12 +49,16 @@ function Home() {
     "components",
     constants.INITIAL_COMPONENTS
   );
+  const [localStorageUpgrades, setLocalStorageUpgrades] = useLocalStorage<
+    Upgrade[]
+  >("upgrades", constants.INITIAL_UPGRADES);
   const [localStorageWatts, setLocalStorageWatts] = useLocalStorage("watts", 0);
   const [name, setName] = React.useState("");
   const [components, setComponents] = React.useState(
     constants.INITIAL_COMPONENTS
   );
-  const [upgrades, setUpgrades] = React.useState(constants.INITIAL_UPGRADES);
+  const [upgrades, setUpgrades] = React.useState<Upgrade[]>([]);
+  const [clickIncrement, setClickIncrement] = React.useState(1);
   const [watts, setWatts] = React.useState(0);
   const isRunning: boolean = R.sum(R.map((item) => item.count, components)) > 0;
   const bg = useColorModeValue("gray.100", "gray.900");
@@ -63,8 +69,18 @@ function Home() {
   const wattsPerSecond = R.sum(
     R.map((item) => item.count * item.perSecond, components)
   );
+  const filteredUpgrades = R.filter((item) => !item.hidden, upgrades);
+  const upgradeHandlers = [
+    () => {
+      setClickIncrement(3);
+    },
+    () => {
+      setClickIncrement(100);
+    },
+  ];
   const [playClick] = useSound("sounds/button_click.mp3");
   const [playSpark1] = useSound("sounds/electricity_spark_1.mp3");
+  const [playSpark2] = useSound("sounds/electricity_spark_2.mp3");
 
   React.useEffect(() => {
     if (localStorageName) {
@@ -77,6 +93,12 @@ function Home() {
       setComponents(localStorageComponents);
     }
   }, [localStorageComponents]);
+
+  React.useEffect(() => {
+    if (localStorageUpgrades) {
+      setUpgrades(localStorageUpgrades);
+    }
+  }, [localStorageUpgrades]);
 
   React.useEffect(() => {
     if (localStorageWatts) {
@@ -97,6 +119,7 @@ function Home() {
   useInterval(
     () => {
       setLocalStorageComponents(components);
+      setLocalStorageUpgrades(upgrades);
       setLocalStorageWatts(watts);
     },
     isRunning || watts > 0 ? constants.AUTO_SAVE_DELAY : null
@@ -134,8 +157,24 @@ function Home() {
     return setComponents(values);
   }
 
+  function handleUpgrade(itemID: string) {
+    const values = upgrades.map((item, index) => {
+      if (item.id === itemID) {
+        decrementWatts(item.price);
+        playSpark2();
+        upgradeHandlers[index]();
+        return {
+          ...item,
+          hidden: true,
+        };
+      }
+      return item;
+    });
+    return setUpgrades(values);
+  }
+
   function handleOnClick() {
-    incrementWatts(1);
+    incrementWatts(clickIncrement);
     playClick();
   }
 
@@ -175,7 +214,7 @@ function Home() {
             whileTap="tapped"
             onClick={handleOnClick}
           >
-            +1
+            +{clickIncrement}
           </Button>
         </Flex>
         <Tabs isFitted>
@@ -201,14 +240,14 @@ function Home() {
             </TabPanel>
             <TabPanel>
               <Flex flexDir="column">
-                {upgrades.map((item) => (
+                {filteredUpgrades.map((item) => (
                   <Component
                     key={item.id}
                     id={item.id}
                     name={item.name}
                     price={item.price}
                     isDisabled={watts < item.price}
-                    onClick={() => {}}
+                    onClick={handleUpgrade}
                   />
                 ))}
               </Flex>

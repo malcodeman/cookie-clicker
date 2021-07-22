@@ -18,8 +18,15 @@ const INITIAL_COMPONENTS = [
 const INITIAL_UPGRADES = [
   {
     id: "button_tweak",
-    name: "Button tweak",
+    name: "Button Tweak",
     price: 200,
+    hidden: false,
+  },
+  {
+    id: "button_overclock",
+    name: "Button Overclock",
+    price: 60000,
+    hidden: false,
   },
 ];
 const AUTO_SAVE_DELAY = 2000;

@@ -4,5 +4,11 @@ type ChakraThemeConfig = {
   initialColorMode: ColorMode;
   useSystemColorMode: boolean;
 };
+type Upgrade = {
+  id: string;
+  name: string;
+  price: number;
+  hidden: boolean;
+};
 
-export type { ChakraThemeConfig };
+export type { ChakraThemeConfig, Upgrade };
