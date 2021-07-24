@@ -15,7 +15,7 @@ import {
   TabPanel,
 } from "@chakra-ui/react";
 import React from "react";
-import { useLocalStorage } from "react-use";
+import { useEvent, useLocalStorage, useTitle } from "react-use";
 import { useInterval } from "react-use";
 import * as R from "ramda";
 import { Canvas } from "@react-three/fiber";
@@ -60,6 +60,7 @@ function Home() {
   const [upgrades, setUpgrades] = React.useState<Upgrade[]>([]);
   const [clickIncrement, setClickIncrement] = React.useState(1);
   const [watts, setWatts] = React.useState(0);
+  const [isTabVisible, setIsTabVisible] = React.useState(true);
   const isRunning: boolean = R.sum(R.map((item) => item.count, components)) > 0;
   const bg = useColorModeValue("gray.100", "gray.900");
   const borderColor = useColorModeValue(
@@ -124,6 +125,12 @@ function Home() {
     },
     isRunning || watts > 0 ? constants.AUTO_SAVE_DELAY : null
   );
+
+  useTitle(
+    isTabVisible ? "Cookie Clone" : `${utils.formatNumber(watts)} watts`
+  );
+
+  useEvent("visibilitychange", () => setIsTabVisible(!isTabVisible));
 
   function handleOnNameChange(nextValue: string) {
     setName(nextValue);
