@@ -71,14 +71,17 @@ function Home() {
     R.map((item) => item.count * item.perSecond, components)
   );
   const filteredUpgrades = R.filter((item) => !item.hidden, upgrades);
-  const upgradeHandlers = [
-    () => {
-      setClickIncrement(3);
-    },
-    () => {
-      setClickIncrement(100);
-    },
-  ];
+  const upgradeHandlers = React.useMemo(
+    () => [
+      () => {
+        setClickIncrement(3);
+      },
+      () => {
+        setClickIncrement(100);
+      },
+    ],
+    []
+  );
   const [playClick] = useSound("sounds/button_click.mp3");
   const [playSpark1] = useSound("sounds/electricity_spark_1.mp3");
   const [playSpark2] = useSound("sounds/electricity_spark_2.mp3");
@@ -106,6 +109,14 @@ function Home() {
       setWatts(localStorageWatts);
     }
   }, [localStorageWatts]);
+
+  React.useEffect(() => {
+    upgrades.map((item, index) => {
+      if (item.count >= 1) {
+        upgradeHandlers[index]();
+      }
+    });
+  }, [upgradeHandlers, upgrades]);
 
   useInterval(
     () => {
@@ -172,6 +183,7 @@ function Home() {
         upgradeHandlers[index]();
         return {
           ...item,
+          count: (item.count += 1),
           hidden: true,
         };
       }

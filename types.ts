@@ -8,6 +8,7 @@ type Upgrade = {
   id: string;
   name: string;
   price: number;
+  count: number;
   hidden: boolean;
 };
 

@@ -20,12 +20,14 @@ const INITIAL_UPGRADES = [
     id: "button_tweak",
     name: "Button Tweak",
     price: 200,
+    count: 0,
     hidden: false,
   },
   {
     id: "button_overclock",
     name: "Button Overclock",
     price: 60000,
+    count: 0,
     hidden: false,
   },
 ];
